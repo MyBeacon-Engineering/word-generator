@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	numDocuments     = 1000000 // Reduced for testing, original: 1000000
+	numDocuments     = 1000000
 	minWordsPerDoc   = 10
-	maxWordsPerDoc   = 150 // Reduced for testing, original: 1000
-	avgWordsPerDoc   = 50  // Reduced for testing, original: 200
+	maxWordsPerDoc   = 1000
+	avgWordsPerDoc   = 200
 	outputFile       = "documents.txt"
 	wordsFile        = "words.txt"
 )
