@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -10,13 +11,14 @@ import (
 	"time"
 )
 
+// Default values for command-line flags
 const (
-	numDocuments     = 1000000
-	minWordsPerDoc   = 10
-	maxWordsPerDoc   = 1000
-	avgWordsPerDoc   = 200
-	outputFile       = "documents.txt"
-	wordsFile        = "words.txt"
+	defaultNumDocuments   = 1000000
+	defaultMinWordsPerDoc = 10
+	defaultMaxWordsPerDoc = 1000
+	defaultAvgWordsPerDoc = 200
+	defaultOutputFile     = "documents.txt"
+	defaultWordsFile      = "words.txt"
 )
 
 // loadEnglishWords loads real English words from the specified file
@@ -48,6 +50,50 @@ func loadEnglishWords(filename string) ([]string, error) {
 }
 
 // generateDocument creates a document with a random number of words
+// runInteractiveMode prompts the user for configuration values except wordsFile
+func runInteractiveMode(numDocs, minWords, maxWords, avgWords int, outputFile, wordsFile string) (int, int, int, int, string, string) {
+	reader := bufio.NewReader(os.Stdin)
+	
+	// Helper function to get user input with default value
+	getInput := func(prompt string, defaultValue interface{}) string {
+		fmt.Print(prompt)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return fmt.Sprintf("%v", defaultValue)
+		}
+		// Trim whitespace and newline characters
+		input = strings.TrimSpace(input)
+		if input == "" {
+			return fmt.Sprintf("%v", defaultValue)
+		}
+		return input
+	}
+	
+	// Number of documents
+	input := getInput(fmt.Sprintf("Number of documents [%d]: ", numDocs), numDocs)
+	fmt.Sscanf(input, "%d", &numDocs)
+	
+	// Minimum words per document
+	input = getInput(fmt.Sprintf("Minimum words per document [%d]: ", minWords), minWords)
+	fmt.Sscanf(input, "%d", &minWords)
+	
+	// Maximum words per document
+	input = getInput(fmt.Sprintf("Maximum words per document [%d]: ", maxWords), maxWords)
+	fmt.Sscanf(input, "%d", &maxWords)
+	
+	// Average words per document
+	input = getInput(fmt.Sprintf("Target average words per document [%d]: ", avgWords), avgWords)
+	fmt.Sscanf(input, "%d", &avgWords)
+	
+	// Output file
+	outputFile = getInput(fmt.Sprintf("Output file [%s]: ", outputFile), outputFile)
+	
+	// Words file is no longer prompted for - using the default or command line value
+	
+	return numDocs, minWords, maxWords, avgWords, outputFile, wordsFile
+}
+
 func generateDocument(r *rand.Rand, dictionary []string, minWords, maxWords int, avgWords float64) string {
 	// Use a triangular distribution to get an average close to avgWords
 	// while still having a range from minWords to maxWords
@@ -103,6 +149,42 @@ func joinWords(words []string) string {
 }
 
 func main() {
+	// Define command-line flags
+	numDocumentsPtr := flag.Int("num", defaultNumDocuments, "Number of documents to generate")
+	minWordsPtr := flag.Int("min", defaultMinWordsPerDoc, "Minimum words per document")
+	maxWordsPtr := flag.Int("max", defaultMaxWordsPerDoc, "Maximum words per document")
+	avgWordsPtr := flag.Int("avg", defaultAvgWordsPerDoc, "Target average words per document")
+	outputFilePtr := flag.String("output", defaultOutputFile, "Output file path")
+	wordsFilePtr := flag.String("words", defaultWordsFile, "English words file path")
+	interactivePtr := flag.Bool("interactive", false, "Run in interactive mode")
+	
+	// Parse command-line flags
+	flag.Parse()
+	
+	// Configuration values
+	numDocuments := *numDocumentsPtr
+	minWordsPerDoc := *minWordsPtr
+	maxWordsPerDoc := *maxWordsPtr
+	avgWordsPerDoc := *avgWordsPtr
+	outputFile := *outputFilePtr
+	wordsFile := *wordsFilePtr
+	
+	// Interactive mode
+	if *interactivePtr {
+		numDocuments, minWordsPerDoc, maxWordsPerDoc, avgWordsPerDoc, outputFile, wordsFile = runInteractiveMode(
+			numDocuments, minWordsPerDoc, maxWordsPerDoc, avgWordsPerDoc, outputFile, wordsFile)
+		// Note: wordsFile is not prompted for in interactive mode, it uses the default or command line value
+	}
+	
+	// Print configuration
+	fmt.Println("Document Generator Configuration:")
+	fmt.Printf("  Number of documents: %d\n", numDocuments)
+	fmt.Printf("  Min words per document: %d\n", minWordsPerDoc)
+	fmt.Printf("  Max words per document: %d\n", maxWordsPerDoc)
+	fmt.Printf("  Target avg words per document: %d\n", avgWordsPerDoc)
+	fmt.Printf("  Output file: %s\n", outputFile)
+	fmt.Printf("  Words file: %s\n\n", wordsFile)
+	
 	startTime := time.Now()
 	fmt.Println("Starting document generation...")
 	

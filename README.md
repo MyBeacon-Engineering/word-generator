@@ -13,7 +13,7 @@ A Go program that generates a large text file (`documents.txt`) containing docum
 
 ## Usage
 
-The project includes a Makefile to simplify common tasks:
+The project includes a Makefile with various commands to simplify usage:
 
 ```bash
 # Download the English words file (required before first run)
@@ -22,30 +22,75 @@ make download-words
 # Build the application
 make build
 
-# Run the document generator
+# Run with default settings (1M documents)
 make run
+
+# Run in interactive mode (prompts for settings)
+make run-interactive
+
+# Run with small dataset (100 documents)
+make run-small
+
+# Run with medium dataset (10K documents)
+make run-medium
+
+# Run with large dataset (1M documents)
+make run-large
 
 # Clean up build artifacts
 make clean
+
+# Show help with all available commands
+make help
 ```
 
-Alternatively, you can run the program directly:
+### Command-line Flags
+
+You can also run the program directly with command-line flags to customize the generation:
 
 ```bash
-go run main.go
+# Run with custom settings
+./document-generator -num 5000 -min 20 -max 300 -avg 100 -output custom-docs.txt
+
+# Run in interactive mode
+./document-generator -interactive
 ```
 
-The program will create a file named `documents.txt` in the current directory.
+Available flags:
+
+- `-num N`: Number of documents to generate (default: 1,000,000)
+- `-min N`: Minimum words per document (default: 10)
+- `-max N`: Maximum words per document (default: 1,000)
+- `-avg N`: Target average words per document (default: 200)
+- `-output FILE`: Output file path (default: "documents.txt")
+- `-words FILE`: English words file path (default: "words.txt")
+- `-interactive`: Run in interactive mode
+
+### Interactive Mode
+
+When running in interactive mode, the program will prompt you for most configuration values, showing the current/default value in brackets. Press Enter to keep the current value, or type a new value to change it.
+
+The program will prompt for:
+- Number of documents to generate
+- Minimum words per document
+- Maximum words per document
+- Target average words per document
+- Output file path
+
+Note: The words file path is not prompted for in interactive mode. It will use either the default value ("words.txt") or the value provided via the command-line flag (`-words`).
 
 ## Configuration
 
-You can modify the following constants in the code to adjust the output:
+The document generator can be configured using command-line flags or interactive mode, without needing to modify the code. The following settings can be adjusted:
 
-- `numDocuments`: Total number of documents to generate (default: 1,000,000)
-- `minWordsPerDoc`: Minimum words per document (default: 10)
-- `maxWordsPerDoc`: Maximum words per document (default: 1,000)
-- `avgWordsPerDoc`: Target average words per document (default: 200)
-- `wordsFile`: Path to the file containing English words (default: "words.txt")
+- Number of documents to generate (default: 1,000,000)
+- Minimum words per document (default: 10)
+- Maximum words per document (default: 1,000)
+- Target average words per document (default: 200)
+- Output file path (default: "documents.txt")
+- English words file path (default: "words.txt")
+
+See the [Usage](#usage) section for details on how to specify these settings.
 
 ## Performance
 
