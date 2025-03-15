@@ -16,8 +16,8 @@ A Go program that generates a large text file (`documents.txt`) containing docum
 The project includes a Makefile with various commands to simplify usage:
 
 ```bash
-# Download the English words file (required before first run)
-make download-words
+# Default target - download words and build
+make all
 
 # Build the application
 make build
@@ -28,7 +28,7 @@ make run
 # Run in interactive mode (prompts for settings)
 make run-interactive
 
-# Run with small dataset (100 documents)
+# Run with small dataset (100 documents, shorter length)
 make run-small
 
 # Run with medium dataset (10K documents)
@@ -37,12 +37,32 @@ make run-medium
 # Run with large dataset (1M documents)
 make run-large
 
-# Clean up build artifacts
+# Clean build artifacts (removes executable and documents files)
 make clean
+
+# Download English words list from GitHub
+make download-words
+
+# Check if the words file exists and has content
+make check-words
 
 # Show help with all available commands
 make help
 ```
+
+### Makefile Command Details
+
+- `make all`: Default target that downloads words and builds the application
+- `make build`: Compiles the Go application into an executable named "document-generator"
+- `make run`: Runs the application with default settings (1M documents)
+- `make run-interactive`: Runs the application in interactive mode, prompting for settings
+- `make run-small`: Runs with a small dataset (100 documents, 5-50 words per doc, avg 20 words)
+- `make run-medium`: Runs with a medium dataset (10K documents, 10-500 words per doc, avg 100 words)
+- `make run-large`: Runs with a large dataset (default 1M documents)
+- `make clean`: Removes the executable and all generated documents files
+- `make download-words`: Downloads a list of English words from GitHub
+- `make check-words`: Verifies the words file exists and has content, downloads if needed
+- `make help`: Displays help information about available commands
 
 ### Command-line Flags
 
@@ -78,6 +98,14 @@ The program will prompt for:
 - Output file path
 
 Note: The words file path is not prompted for in interactive mode. It will use either the default value ("words.txt") or the value provided via the command-line flag (`-words`).
+
+#### Input Handling
+
+The interactive mode features improved input handling:
+- Default values are clearly displayed in brackets [like this]
+- Simply pressing Enter will use the default value
+- Input is properly trimmed of whitespace and newline characters
+- Error handling ensures the program continues even if input reading fails
 
 ## Configuration
 
