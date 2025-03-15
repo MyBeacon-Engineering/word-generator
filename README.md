@@ -1,99 +1,72 @@
 # Document Generator
 
-A Go program that generates a large text file (`documents.txt`) containing documents with real English words.
+A Go program that generates text files containing random documents composed of real English words. The program uses a triangular distribution to control document lengths, ensuring a natural variation while maintaining a target average length.
 
 ## Features
 
-- Generates 1 million documents in a single text file
-- Each document is on its own line
-- Documents contain between 10-1000 real English words
-- Average document length is 200 words
-- Uses a dictionary of real English words from Google's most common English words
-- Shows progress during generation
+- Generates a specified number of documents
+- Uses real English words from a dictionary
+- Configurable document length parameters:
+  - Minimum words per document
+  - Maximum words per document
+  - Target average words per document
+- Progress tracking during generation
+- Interactive mode for configuration
+- Command-line flags for all parameters
+
+## Installation
+
+1. Clone the repository
+2. Download the English words file:
+```bash
+make download-words
+```
 
 ## Usage
 
-The project includes a Makefile with various commands to simplify usage:
-
+Run with default settings:
 ```bash
-# Download the English words file (required before first run)
-make download-words
+go run cmd/main.go
+```
 
-# Build the application
-make build
+Run with command-line flags:
+```bash
+go run cmd/main.go -num 1000 -min 5 -max 500 -avg 100 -output output.txt
+```
 
-# Run with default settings (1M documents)
-make run
-
-# Run in interactive mode (prompts for settings)
-make run-interactive
-
-# Run with small dataset (100 documents)
-make run-small
-
-# Run with medium dataset (10K documents)
-make run-medium
-
-# Run with large dataset (1M documents)
-make run-large
-
-# Clean up build artifacts
-make clean
-
-# Show help with all available commands
-make help
+Run in interactive mode:
+```bash
+go run cmd/main.go -interactive
 ```
 
 ### Command-line Flags
 
-You can also run the program directly with command-line flags to customize the generation:
-
-```bash
-# Run with custom settings
-./document-generator -num 5000 -min 20 -max 300 -avg 100 -output custom-docs.txt
-
-# Run in interactive mode
-./document-generator -interactive
-```
-
-Available flags:
-
-- `-num N`: Number of documents to generate (default: 1,000,000)
-- `-min N`: Minimum words per document (default: 10)
-- `-max N`: Maximum words per document (default: 1,000)
-- `-avg N`: Target average words per document (default: 200)
-- `-output FILE`: Output file path (default: "documents.txt")
-- `-words FILE`: English words file path (default: "words.txt")
+- `-num`: Number of documents to generate (default: 1,000,000)
+- `-min`: Minimum words per document (default: 10)
+- `-max`: Maximum words per document (default: 1,000)
+- `-avg`: Target average words per document (default: 200)
+- `-output`: Output file path (default: "documents.txt")
+- `-words`: English words file path (default: "words.txt")
 - `-interactive`: Run in interactive mode
 
-### Interactive Mode
+## Project Structure
 
-When running in interactive mode, the program will prompt you for most configuration values, showing the current/default value in brackets. Press Enter to keep the current value, or type a new value to change it.
+```
+.
+├── cmd/
+│   └── main.go           # Main entry point
+├── pkg/
+│   ├── config/           # Configuration handling
+│   │   └── config.go
+│   ├── generator/        # Document generation logic
+│   │   └── generator.go
+│   └── utils/           # Utility functions
+│       └── distribution.go
+├── go.mod               # Go module file
+├── README.md            # This file
+└── words.txt            # Dictionary file (download separately)
+```
 
-The program will prompt for:
-- Number of documents to generate
-- Minimum words per document
-- Maximum words per document
-- Target average words per document
-- Output file path
+## Contributing
 
-Note: The words file path is not prompted for in interactive mode. It will use either the default value ("words.txt") or the value provided via the command-line flag (`-words`).
-
-## Configuration
-
-The document generator can be configured using command-line flags or interactive mode, without needing to modify the code. The following settings can be adjusted:
-
-- Number of documents to generate (default: 1,000,000)
-- Minimum words per document (default: 10)
-- Maximum words per document (default: 1,000)
-- Target average words per document (default: 200)
-- Output file path (default: "documents.txt")
-- English words file path (default: "words.txt")
-
-See the [Usage](#usage) section for details on how to specify these settings.
-
-## Performance
-
-The program uses buffered I/O for better performance when writing the large output file. It loads a dictionary of real English words from a file and reuses them for all documents.
-
-The triangular distribution is used to achieve the target average document length while maintaining the specified minimum and maximum document lengths.
+Contributions are welcome! Please feel free to submit a Pull Request.
